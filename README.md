@@ -21,4 +21,5 @@
 
 ## 更多 ##
 
-见wiki
+[设计文档](/doc/design.md)
+[接口文档](/doc/interface.md)
