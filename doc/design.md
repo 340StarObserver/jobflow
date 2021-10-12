@@ -4,9 +4,11 @@
 
 ## 编排模型 ##
 
+![编排模型](/static/jobflow.DAG.png)
+
 ## 编排语法 ##
 
-见于 [编排语法](/doc/manual.md)
+见于 [使用手册](/doc/manual.md)
 
 ## 编排通知机制 ##
 
