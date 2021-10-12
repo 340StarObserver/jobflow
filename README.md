@@ -21,5 +21,7 @@
 
 ## 更多 ##
 
+- [使用手册](/doc/manual.md)
 - [设计文档](/doc/design.md)
 - [接口文档](/doc/interface.md)
+- [数据模型](/doc/model.md)
