@@ -4,7 +4,7 @@
 
 ## 编排模型 ##
 
-![编排模型](/static/jobflow.DAG.png)
+![编排模型](./static/jobflow.DAG.png)
 
 ## 编排语法 ##
 
