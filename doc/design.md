@@ -4,7 +4,7 @@
 
 ## 编排模型 ##
 
-![编排模型](./static/jobflow.DAG.png)
+<img src = "https://static-1256056882.cos.ap-guangzhou.myqcloud.com/seven%2Fjobflow.DAG.png">
 
 ## 编排语法 ##
 
