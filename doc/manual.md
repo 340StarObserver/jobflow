@@ -32,7 +32,7 @@ steps:
       - 1
 ```
 
-特别说明【name】字段，往往我们多个业务内伴有相同操作，可将这种操作抽象为一个step，多个业务（编排）都用到它
+特别说明 **name** 字段，往往我们多个业务内伴有相同操作，可将这种操作抽象为一个step，多个业务（编排）都用到它
 
 ### 高阶 ###
 
@@ -40,7 +40,7 @@ steps:
 
 当step执行完，希望把它的结果传给下游的step，可在step上添加register进行声明
 
-- 在后续step中，就可以像访问【params】一样来读取 fieldA、fieldB
+- 在后续step中，就可以像访问 **params** 一样来读取 fieldA、fieldB
 - 变量支持任意类型，可嵌套
 
 ```yaml
@@ -94,8 +94,8 @@ steps:
 在单个step上，可加上if条件表达式，若不满足则跳过
 
 - shell语法，支持与、或运算
-- 可引用【params】中的变量
-- 可引用前面的step中【register】的变量
+- 可引用 **params** 中的变量
+- 可引用前面的step中 **register** 的变量
 
 ```yaml
 steps:
@@ -111,10 +111,6 @@ steps:
 #### 循环 ####
 
 在单个step上，可加上while循环表达式
-
-- shell语法，支持与、或运算
-- 可引用【params】中的变量
-- 可引用前面的step中【register】的变量
 
 ```yaml
 steps:
