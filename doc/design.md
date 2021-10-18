@@ -12,16 +12,6 @@
 
 见于 [使用手册](/doc/manual.md)
 
-## 编排通知机制 ##
-
-### 下发状态 ###
-
-见于 [数据设计](/doc/model.md) **状态消息**章节
-
-### 上报结果 ###
-
-见于 [接口文档](/doc/interface.md) **上报结果**章节
-
 ## 编排引擎架构 ##
 
 <img src="https://static-1256056882.cos.ap-guangzhou.myqcloud.com/seven/jobflow.frame.png">
@@ -65,14 +55,16 @@
 - **Dispatcher** 调用 **OSS** 接口，获取 任务进度 + 编排DAG
 - **Dispatcher** 根据DAG拓扑关系，计算现在应该执行哪些节点，并封装 **"状态流转"的消息**，扔给 **MQ**
 - 业务方消费者，会集成我们提供的 **Agent**，它会订阅自己关注的 **"状态流转"的消息**
-- 执行完业务逻辑后，**Agent** 调用 **OSS**接口上报 本步骤的结果
+- **Agent** 调用 **OSS**接口上报 本步骤开始
+- **Agent** 调用业务逻辑
+- **Agent** 调用 **OSS**接口上报 本步骤结果
 - **OSS** 更新任务进度到 **DB**，若本步骤是成功的，则应该继续下一步，做法是再次封装一个 **"调度命令"的消息**，扔给 **MQ**，这就循环到了第一步
 
 ### 异常处理 ###
 
 #### 中断 ####
 
-在pipeline上设置一个**中断标记**，当 **Agent** 调用 **OSS**接口上报某步骤的结果后，若发现有这个中断标记，则不会给**MQ**发送调度命令，而是将pipeline设为**已终止**
+在pipeline上设置一个**中断标记**，当 **Agent** 调用 **OSS**接口上报某步骤的结果时，**OSS**若发现有这个中断标记，则不会给**MQ**发送调度命令，而是将pipeline设为**已终止**
 
 限制 :
 - 中断不会影响当前正在执行的步骤。即不会让**Agent**立即杀死业务逻辑
@@ -94,6 +86,8 @@
 
 <img src="https://static-1256056882.cos.ap-guangzhou.myqcloud.com/seven/jobflow.pipeline.state.png">
 
+图中，**下发下一步可执行的步骤集**，这里要添加重试逻辑 : 即若步骤失败了，但未达最大重试次数，则再一次下发本步骤
+
 ## 编排的Agent ##
 
 <img src="https://static-1256056882.cos.ap-guangzhou.myqcloud.com/seven/jobflow.agent.png">
@@ -107,9 +101,13 @@
 消费过程 :
 
 - **receiver** 拿到消息后，对 **信号量** 执行P操作，抢不到锁则忙等
-- **receiver** 抢到锁后，执行对应的业务逻辑（不同receiver所监听的routing_key，对应不同的业务函数）
-- **receiver** 对 **信号量** 执行V操作
-- **receiver** 调用 **reporter** 上报结果
+- **receiver** 抢到锁后 :
+-- 首先调用 **reporter** 上报开始
+-- 然后执行对应的业务逻辑（不同receiver所监听的routing_key，对应不同的业务函数）
+-- 然后对 **信号量** 执行V操作
+-- 最后调用 **receiver** 调用 **reporter** 上报结果
+
+**Agent**不感知重试逻辑，只管上报结果。因为步骤失败很可能是机器本身故障，就算本机上重试也多半仍然失败，不如交给调度器下发给另外的消费者
 
 ## 编排定时触发机制 ##
 

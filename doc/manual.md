@@ -9,11 +9,13 @@
 使用YAML格式来写编排，包含三部分 :
 
 - namespace: 名字空间（常把一类业务的编排归于同一个名字空间）
+- name: 编排名字（无唯一性要求）
 - params : 编排的入参（编排常作为模板，将可变参数抽离出来）
 - steps : 步骤
 
 ```yaml
 namespace: dongfeng
+name: test
 
 params:
   - desc: 变量描述
@@ -35,6 +37,30 @@ steps:
 特别说明 **name** 字段，往往我们多个业务内伴有相同操作，可将这种操作抽象为一个step，多个业务（编排）都用到它
 
 ### 高阶 ###
+
+#### 重试 ####
+
+指定retry次数，允许失败多少次
+
+```yaml
+steps:
+  - id: 1
+    name: A
+    desc: A.步骤描述
+    retry: 2
+```
+
+#### 跨业务调用 ####
+
+有时需要调用别的业务团队的步骤，可以在step上指定namespace（默认不加就是编排开头定义的）
+
+```yaml
+steps:
+  - id: 1
+    namespace: tiangong
+    name: A
+    desc: A.步骤描述
+```
 
 #### 结果传递 ####
 
